@@ -1,0 +1,16 @@
+Задание
+В таблице fine увеличить в два раза сумму неоплаченных штрафов для отобранных на предыдущем шаге записей. 
+
+Решение:
+UPDATE fine AS f, 
+    (
+     SELECT name, number_plate, violation
+        FROM fine
+        GROUP BY name, number_plate, violation
+        HAVING COUNT(*)>=2
+     ) AS q
+SET f.sum_fine=f.sum_fine*2 
+WHERE f.name=q.name AND
+      f.number_plate=q.number_plate AND
+      f.violation=q.violation
+      AND f.date_payment IS NULL;
